@@ -1,19 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  AudioWaveform,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  SquareTerminal,
-} from "lucide-react"
+import * as React from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { GalleryVerticalEnd, Home, LogOut, PieChart } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -24,89 +15,109 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { signOut } from "next-auth/react";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
-      name: "POS",
+      name: "ALBALY INSIGHTS",
       logo: GalleryVerticalEnd,
-      plan: "relax",
-    },
-  ],
-  dashboardNav: [
-    {
-      title: "Main Order",
-      url: "/main/order",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Order",
-          url: "/main/order",
-        },
-        {
-          title: "Order To Day",
-          url: "/main/order-today",
-        },
-      ],
     },
   ],
   projects: [
     {
-      name: "Product",
-      url: "/main/product",
+      name: "Overview",
+      url: "/main/overview",
+      icon: Home,
+    },
+    {
+      name: "Insights",
+      url: "/main/insights",
       icon: PieChart,
     },
-         {
-      name: "User",
-      url: "/main/order",
-      icon: Frame,
-    },
-  ]
-}
+  ],
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar } = useSidebar();
+  const pathname = usePathname();
+  const activeTeam = data.teams[0];
 
-  const activeTeam = data.teams[0] 
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/login" });
+  };
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+    <Sidebar collapsible="icon" className="dark border-zinc-800" {...props}>
+      <SidebarHeader className="border-b border-zinc-800 bg-zinc-950">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="hover:bg-zinc-900 transition-colors text-zinc-50 data-[state=collapsed]:justify-center"
               onClick={toggleSidebar}
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
+              <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-zinc-50 text-zinc-950 font-bold">
+                <activeTeam.logo className="size-4 shrink-0" />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
+
+              <div className="grid flex-1 text-left text-sm leading-tight ml-2">
+                <span className="truncate font-semibold text-zinc-50">
                   {activeTeam.name}
                 </span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.dashboardNav} />
-        <NavProjects projects={data.projects} />
+      <SidebarContent className="py-4 bg-zinc-950">
+        <SidebarMenu>
+          {data.projects.map((item) => {
+            const isActive = pathname === item.url;
+            return (
+              <SidebarMenuItem key={item.name}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.name}
+                  className={cn(
+                    "transition-colors hover:bg-zinc-900",
+                    "data-[state=collapsed]:justify-center",
+                    isActive
+                      ? "bg-zinc-800 text-white font-medium"
+                      : "text-zinc-400 hover:text-zinc-100",
+                  )}
+                >
+                  <Link href={item.url} className="flex items-center gap-2">
+                    <item.icon className={cn("size-4 shrink-0")} />
+                    <span className="truncate">{item.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
+      <SidebarFooter className="border-t border-zinc-800 p-2 bg-zinc-950">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Log Out"
+              onClick={handleLogout}
+              className={cn(
+                "bg-red-600 hover:bg-red-700 text-white transition-all",
+                "data-[state=collapsed]:justify-center",
+                "h-9 w-full flex items-center gap-2",
+              )}
+            >
+              <LogOut className="size-4 shrink-0" />
+              <span className="truncate">Log Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

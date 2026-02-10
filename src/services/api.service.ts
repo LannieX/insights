@@ -1,16 +1,30 @@
+'use server';
+
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 const MODE = process.env.NEXT_PUBLIC_MODE || "dev";
 
-const BASE_URL = MODE === "prod" 
-  ? "https://www.test-servies.com" 
-  : "http://localhost:4444";
+const BASE_URL =
+  MODE === "prod" ? "https://www.test-servies.com" : "http://localhost:8000";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export const ApiServices = async (
-  method: HttpMethod, 
-  endpoint: string, 
-  data?: Record<string, any> 
+  method: HttpMethod,
+  endpoint: string,
+  data?: Record<string, any>,
 ) => {
+const session = await getServerSession(authOptions);
+  
+  const accessToken = session?.user?.accessToken || null; 
+
+  if (!accessToken) {
+    redirect("/login");
+  }
+
   try {
     const url = new URL(`${BASE_URL}${endpoint}`);
 
@@ -18,6 +32,7 @@ export const ApiServices = async (
       method,
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
     };
 
@@ -42,7 +57,6 @@ export const ApiServices = async (
     }
 
     return await response.json();
-
   } catch (error) {
     console.error("ApiServices Error:", error);
     throw error;
