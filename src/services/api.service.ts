@@ -2,13 +2,12 @@
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const MODE = process.env.NEXT_PUBLIC_MODE || "dev";
 
 const BASE_URL =
-  MODE === "prod" ? "https://www.test-servies.com" : "http://localhost:8000";
+  MODE === "prod" ? "https://insights-services.onrender.com" : "http://localhost:8000";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
