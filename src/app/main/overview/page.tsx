@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getOverview } from "@/services/insightsServices";
 import { OverviewType } from "@/types/overviewType";
 import { getActivityStyle, getInventoryDisplay } from "@/utils/inventoryHelper";
+import { Button } from "antd";
 import {
   AlertTriangle,
   ArrowBigDown,
@@ -21,6 +22,7 @@ import {
   UsersRound,
   XCircle,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
@@ -55,9 +57,19 @@ const OverviewPage = () => {
     },
   } satisfies ChartConfig;
 
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+
   return (
     <div className="flex flex-col gap-6 p-4">
-      <h2 className="text-2xl font-bold">Overview</h2>
+      <div className="flex flex-row justify-between">
+          <h2 className="text-2xl font-bold">Overview</h2>
+          {isAdmin && (
+            <Button color="cyan" variant="solid">
+            View Stock
+          </Button>
+          )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 w-full h-30">
           {loading ? (
@@ -66,29 +78,29 @@ const OverviewPage = () => {
             </div>
           ) : (
             <div className="flex flex-row w-full">
-              <div className="flex flex-col w-[50%]  gap-3">
+              <div className="flex flex-col justify-center w-[80%] gap-1">
                 <p className="text-slate-500 text-[16px]">Total Sales</p>
-                <div className="flex flex-row gap-5 items-center">
+                <div className="flex flex-row gap-2 items-center">
                   <p className="text-[22px] font-bold">
                     {dataMain?.totalSale?.value?.toLocaleString() ?? 0}
                   </p>
                   <div
-                    className={`flex flex-row gap-1 items-center p-1 rounded-2xl text-[12px] ${
+                    className={`flex flex-row gap-1 items-center p-1 rounded-xl text-[11px] ${
                       (dataMain?.totalSale?.change ?? 0) < 0
                         ? "bg-amber-50 text-amber-500"
                         : "bg-green-50 text-green-500"
                     }`}
                   >
                     {(dataMain?.totalSale?.change ?? 0) < 0 ? (
-                      <ArrowBigDown className="size-4" />
+                      <ArrowBigDown className="size-3" />
                     ) : (
-                      <ArrowBigUp className="size-4" />
+                      <ArrowBigUp className="size-3" />
                     )}
                     {Math.abs(dataMain?.totalSale?.change ?? 0)}%
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end items-center w-[50%]">
+              <div className="flex justify-end items-center w-[20%]">
                 <div className="bg-sky-100 w-fit h-fit p-1.5 rounded-[5px]">
                   <ChartNoAxesColumnIncreasing className="size-6 text-sky-500" />
                 </div>
@@ -103,29 +115,29 @@ const OverviewPage = () => {
             </div>
           ) : (
             <div className="flex flex-row w-full">
-              <div className="flex flex-col w-[50%]  gap-3">
+              <div className="flex flex-col w-[80%]  gap-3">
                 <p className="text-slate-500 text-[16px]">Active Customers</p>
-                <div className="flex flex-row gap-5 items-center">
+                <div className="flex flex-row gap-2 items-center">
                   <p className="text-[22px] font-bold">
                     {dataMain?.activeCustomers?.value?.toLocaleString() ?? 0}
                   </p>
                   <div
-                    className={`flex flex-row gap-1 items-center p-1 rounded-2xl text-[12px] ${
+                    className={`flex flex-row gap-1 items-center p-1 rounded-xl text-[11px] ${
                       (dataMain?.activeCustomers?.change ?? 0) < 0
                         ? "bg-amber-50 text-amber-500"
                         : "bg-green-50 text-green-500"
                     }`}
                   >
                     {(dataMain?.activeCustomers?.change ?? 0) < 0 ? (
-                      <ArrowBigDown className="size-4" />
+                      <ArrowBigDown className="size-3" />
                     ) : (
-                      <ArrowBigUp className="size-4" />
+                      <ArrowBigUp className="size-3" />
                     )}
                     {Math.abs(dataMain?.activeCustomers?.change ?? 0)}%
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end items-center w-[50%]">
+              <div className="flex justify-end items-center w-[20%]">
                 <div className="bg-purple-100 w-fit h-fit p-1.5 rounded-[5px]">
                   <UsersRound className="size-6 text-purple-500" />
                 </div>
@@ -140,28 +152,28 @@ const OverviewPage = () => {
             </div>
           ) : (
             <div className="flex flex-row w-full">
-              <div className="flex flex-col w-[50%] gap-3">
+              <div className="flex flex-col w-[80%] gap-3">
                 <p className="text-slate-500 text-[16px]">Inventory Status</p>
-                <div className="flex flex-row gap-5 items-center">
+                <div className="flex flex-row gap-2 items-center">
                   <p className="text-[22px] font-bold">
                     {value.toLocaleString()}
                   </p>
                   <div
-                    className={`flex flex-row gap-1 items-center px-2 py-1 rounded-2xl text-[12px] font-medium ${color}`}
+                    className={`flex flex-row gap-1 items-center px-2 py-1 rounded-xl text-[11px] font-medium ${color}`}
                   >
                     {statusType === "CRITICAL" && (
-                      <XCircle className="size-4" />
+                      <XCircle className="size-3" />
                     )}
                     {statusType === "WARNING" && (
-                      <AlertTriangle className="size-4" />
+                      <AlertTriangle className="size-3" />
                     )}
-                    {statusType === "GOOD" && <ArrowBigUp className="size-4" />}
+                    {statusType === "GOOD" && <ArrowBigUp className="size-3" />}
 
                     {label}
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end items-center w-[50%]">
+              <div className="flex justify-end items-center w-[20%]">
                 <div className="bg-green-100 w-fit h-fit p-1.5 rounded-[5px]">
                   <Gift className="size-6 text-green-500" />
                 </div>

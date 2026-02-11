@@ -10,6 +10,7 @@ export interface LoginResponse {
       email: string;
       image: string;
       phone: string;
+      role?: string;
     };
     accessToken: string;
   };

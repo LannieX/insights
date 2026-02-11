@@ -75,7 +75,8 @@ export interface FunnelItem {
 
 export interface SalesFunnel {
   data: FunnelItem[];
-  conversionChange: number;
+  totalGrowth: number;
+  summary: string;
 }
 
 export interface InsightsType {

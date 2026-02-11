@@ -209,24 +209,24 @@ const Insights = () => {
           ) : (
             <div className="flex flex-col gap-3">
               <div className="flex flex-row w-full  justify-between">
-                <p className="text-sm font-medium">Customer Drop-off</p>
+                <p className="text-sm font-medium">Conversion Funnel</p>
                 <div
                   className={`flex flex-row gap-1 items-center p-1 rounded-2xl text-[12px] ${
-                    (dataMain?.funnel?.conversionChange ?? 0) < 0
+                    (dataMain?.funnel?.totalGrowth ?? 0) < 0
                       ? "bg-amber-50 text-amber-500"
                       : "bg-green-50 text-green-500"
                   }`}
                 >
-                  {(dataMain?.funnel?.conversionChange ?? 0) < 0 ? (
+                  {(dataMain?.funnel?.totalGrowth ?? 0) < 0 ? (
                     <ArrowBigDown className="size-4" />
                   ) : (
                     <ArrowBigUp className="size-4" />
                   )}
-                  {Math.abs(dataMain?.funnel?.conversionChange ?? 0)}%
+                  {Math.abs(dataMain?.funnel?.totalGrowth ?? 0)}%
                 </div>
               </div>
               <p className="text-xs text-slate-500">
-                Checkout to purchase conversion decreased by 5%
+                {dataMain?.funnel?.summary ?? "-"}
               </p>
               <div className="flex flex-col gap-3">
                 <LineProgress

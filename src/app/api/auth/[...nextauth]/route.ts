@@ -11,19 +11,14 @@ export const authOptions: AuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("👉 Credentials received:", credentials);
         if (!credentials) return null;
-
        try {
       const res = await login({
         username: credentials.username,
         password: credentials.password,
       });
 
-      console.log("🧐 Result inside authorize:", res);
-
       if (res && res.data && res.data.accessToken) {
-        console.log("✅ Login Success, mapping user...");
         const userProfile = res.data.items;
         const token = res.data.accessToken;
 
@@ -34,6 +29,7 @@ export const authOptions: AuthOptions = {
           email: userProfile?.email,
           image: userProfile?.image,
           phone: userProfile?.phone,
+          role: userProfile?.role,
           accessToken: token,
         } as any;
       }
