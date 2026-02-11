@@ -2,7 +2,7 @@ import {payloadLogin } from "@/types/authType";
 
 export const login = async (credentials: payloadLogin) => {
   const BASE_URL = process.env.NEXT_PUBLIC_MODE === "prod" 
-    ? "https://www.test-servies.com" 
+    ? "https://insights-services.onrender.com" 
     : "http://localhost:8000";
 
     console.log(`🚀 Connecting to Backend: ${BASE_URL}/login`);
